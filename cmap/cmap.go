@@ -1,11 +1,12 @@
 package cmap
 
 import (
-	"errors"
 	"sync"
 )
 
-var NotFound = errors.New("key not found")
+type notFound struct{}
+
+var NotFound notFound
 
 func New() *Map {
 	return &Map{data: make(map[string]*interface{})}
