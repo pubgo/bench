@@ -4,9 +4,7 @@ import (
 	"sync"
 )
 
-type notFound struct{}
-
-var NotFound notFound
+var NotFound = new(interface{})
 
 func New() *Map {
 	return &Map{data: make(map[string]*interface{})}
@@ -57,6 +55,17 @@ func (t *Map) GetSet(key string, val interface{}) (interface{}, bool) {
 	t.rw.Unlock()
 
 	return val, false
+}
+
+func (t *Map) Keys() []string {
+	t.rw.RLock()
+	defer t.rw.RUnlock()
+
+	var keys = make([]string, 0, len(t.data))
+	for k := range t.data {
+		keys = append(keys, k)
+	}
+	return keys
 }
 
 func (t *Map) Set(key string, val interface{}) {
