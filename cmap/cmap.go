@@ -16,6 +16,7 @@ type Map struct {
 }
 
 func (t *Map) Has(key string) bool {
+
 	t.rw.RLock()
 	_, ok := t.data[key]
 	t.rw.RUnlock()
