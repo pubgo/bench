@@ -9,9 +9,10 @@ import (
 	"github.com/ethereum/go-ethereum/rlp"
 	_ "github.com/ethereum/go-ethereum/rlp"
 	jsonitor "github.com/json-iterator/go"
+	"github.com/kelindar/binary"
+	_ "github.com/kelindar/binary"
 	"github.com/pubgo/xerror"
 	_ "github.com/smallnest/gosercomp/model"
-	amino "github.com/tendermint/go-amino"
 	msgpack "github.com/vmihailenco/msgpack/v5"
 	"testing"
 )
@@ -21,7 +22,8 @@ var std = jsonitor.Config{
 	//UseNumber:              true,
 	//ValidateJsonRawMessage: true,
 }.Froze()
-var cdc = amino.NewCodec()
+
+//var cdc = amino.NewCodec()
 
 type d interface {
 }
@@ -29,9 +31,9 @@ type d interface {
 func init() {
 	std = jsonitor.ConfigCompatibleWithStandardLibrary
 	std = jsonitor.ConfigDefault
-	cdc.RegisterInterface((*d)(nil), nil)
-	cdc.RegisterConcrete(&Student{}, "main/Student", nil)
-	cdc.RegisterConcrete(&Student1{}, "main/Student1", nil)
+	//cdc.RegisterInterface((*d)(nil), nil)
+	//cdc.RegisterConcrete(&Student{}, "main/Student", nil)
+	//cdc.RegisterConcrete(&Student1{}, "main/Student1", nil)
 }
 
 //BenchmarkUnmarshalByColfer
@@ -40,7 +42,7 @@ func init() {
 //BenchmarkUnmarshalByMsgp
 
 //func TestAmino(t *testing.T) {
-//	s1 := getStu()
+//	s1 := GetStu()
 //	var dt = xerror.PanicBytes(cdc.MarshalJSON(s1))
 //	fmt.Printf("%s\n", dt)
 //
@@ -50,7 +52,7 @@ func init() {
 //}
 
 func TestRlp(t *testing.T) {
-	s1 := getStu()
+	s1 := GetStu()
 	var dt, err = rlp.EncodeToBytes(s1)
 	xerror.Panic(err)
 
@@ -62,7 +64,7 @@ func TestRlp(t *testing.T) {
 }
 
 func TestMsgpack(t *testing.T) {
-	s1 := getStu()
+	s1 := GetStu()
 	var dt, err = msgpack.Marshal(s1)
 	xerror.Panic(err)
 	fmt.Printf("%s\n", dt)
@@ -72,56 +74,78 @@ func TestMsgpack(t *testing.T) {
 	fmt.Printf("%#v\n", val)
 }
 
-func BenchmarkAminoEncode(b *testing.B) {
-	s1 := getStu()
+//func BenchmarkAminoEncode(b *testing.B) {
+//	s1 := GetStu()
+//	for i := 0; i < b.N; i++ {
+//		var _, _ = cdc.MarshalBinaryBare(s1)
+//	}
+//}
+
+//func BenchmarkAminoDecode(b *testing.B) {
+//	s1 := GetStu()
+//	var dt, err = cdc.MarshalBinaryBare(s1)
+//	xerror.Panic(err)
+//
+//	b.ResetTimer()
+//	var val Student
+//	for i := 0; i < b.N; i++ {
+//		_ = cdc.UnmarshalBinaryBare(dt, &val)
+//	}
+//}
+
+//func BenchmarkRlpEncode(b *testing.B) {
+//	s1 := GetStu()
+//	for i := 0; i < b.N; i++ {
+//		_, _ = rlp.EncodeToBytes(s1)
+//	}
+//}
+
+//func BenchmarkRlpDecode(b *testing.B) {
+//	s1 := GetStu()
+//	var dt, err = rlp.EncodeToBytes(s1)
+//	xerror.Panic(err)
+//
+//	//fmt.Printf("%s\n", dt)
+//	b.ResetTimer()
+//
+//	var val Student
+//	for i := 0; i < b.N; i++ {
+//		_ = rlp.DecodeBytes(dt, &val)
+//	}
+//	//fmt.Printf("%#v\n", val)
+//}
+
+func BenchmarkBinaryEncode(b *testing.B) {
+	s1 := GetStu()
 	for i := 0; i < b.N; i++ {
-		var _, _ = cdc.MarshalBinaryBare(s1)
+		if _, err := binary.Marshal(s1); err != nil {
+			panic(err)
+		}
 	}
 }
 
-func BenchmarkAminoDecode(b *testing.B) {
-	s1 := getStu()
-	var dt, err = cdc.MarshalBinaryBare(s1)
+func BenchmarkBinaryDecode(b *testing.B) {
+	s1 := GetStu()
+	var dt, err = binary.Marshal(s1)
 	xerror.Panic(err)
 
 	b.ResetTimer()
 	var val Student
+
 	for i := 0; i < b.N; i++ {
-		_ = cdc.UnmarshalBinaryBare(dt, &val)
+		_ = binary.Unmarshal(dt, &val)
 	}
-}
-
-func BenchmarkRlpEncode(b *testing.B) {
-	s1 := getStu()
-	for i := 0; i < b.N; i++ {
-		_, _ = rlp.EncodeToBytes(s1)
-	}
-}
-
-func BenchmarkRlpDecode(b *testing.B) {
-	s1 := getStu()
-	var dt, err = rlp.EncodeToBytes(s1)
-	xerror.Panic(err)
-
-	//fmt.Printf("%s\n", dt)
-	b.ResetTimer()
-
-	var val Student
-	for i := 0; i < b.N; i++ {
-		_ = rlp.DecodeBytes(dt, &val)
-	}
-	//fmt.Printf("%#v\n", val)
 }
 
 func BenchmarkMsgPackEncode(b *testing.B) {
-	s1 := getStu()
+	s1 := GetStu()
 	for i := 0; i < b.N; i++ {
 		var _, _ = msgpack.Marshal(s1)
 	}
 }
 
 func BenchmarkMsgPackDecode(b *testing.B) {
-	s1 := getStu()
+	s1 := GetStu()
 	var dt, err = msgpack.Marshal(s1)
 	xerror.Panic(err)
 
@@ -133,7 +157,7 @@ func BenchmarkMsgPackDecode(b *testing.B) {
 }
 
 func TestGobEncode(t *testing.T) {
-	s1 := getStu()
+	s1 := GetStu()
 	_, err := serialize(s1)
 	if err != nil {
 		t.Fatal(err)
@@ -141,7 +165,7 @@ func TestGobEncode(t *testing.T) {
 }
 
 func TestGobDecode(t *testing.T) {
-	s1 := getStu()
+	s1 := GetStu()
 	dt, _ := serialize(s1)
 	fmt.Printf("%s\n", dt)
 
@@ -158,14 +182,14 @@ func TestGobDecode(t *testing.T) {
 }
 
 func BenchmarkGobEncode(b *testing.B) {
-	s1 := getStu()
+	s1 := GetStu()
 	for i := 0; i < b.N; i++ {
 		_, _ = serialize(s1)
 	}
 }
 
 func BenchmarkGobDecode(b *testing.B) {
-	s1 := getStu()
+	s1 := GetStu()
 	var dt, _ = serialize(s1)
 
 	b.ResetTimer()
@@ -175,14 +199,14 @@ func BenchmarkGobDecode(b *testing.B) {
 }
 
 func BenchmarkJsonEncode(b *testing.B) {
-	s1 := getStu()
+	s1 := GetStu()
 	for i := 0; i < b.N; i++ {
 		_, _ = json.Marshal(s1)
 	}
 }
 
 func BenchmarkJsonDecode(b *testing.B) {
-	s1 := getStu()
+	s1 := GetStu()
 	var dd interface{}
 	var dt, _ = json.Marshal(s1)
 
@@ -193,7 +217,7 @@ func BenchmarkJsonDecode(b *testing.B) {
 }
 
 func BenchmarkJsonitorEncode(b *testing.B) {
-	s1 := getStu()
+	s1 := GetStu()
 	for i := 0; i < b.N; i++ {
 		_, _ = std.Marshal(s1)
 
@@ -201,7 +225,7 @@ func BenchmarkJsonitorEncode(b *testing.B) {
 }
 
 func BenchmarkJsonitorDecode(b *testing.B) {
-	s1 := getStu()
+	s1 := GetStu()
 	var dd interface{}
 	var dt, _ = std.Marshal(s1)
 
@@ -209,21 +233,6 @@ func BenchmarkJsonitorDecode(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		_ = std.Unmarshal(dt, &dd)
 	}
-}
-
-type Student struct {
-	Name    string
-	Age     uint8
-	Address []string
-	Data    string
-	Stu     *Student1
-}
-
-type Student1 struct {
-	Name    string
-	Age     uint8
-	Address []string
-	//Data    map[string]interface{}
 }
 
 func serialize(value interface{}) ([]byte, error) {
@@ -250,28 +259,4 @@ func deserialize(valueBytes []byte) (interface{}, error) {
 	}
 
 	return value, nil
-}
-
-func getStu() *Student {
-	return &Student{
-		Name:    "张三",
-		Age:     100,
-		Address: []string{"张三", "张三", "张三", "张三", "张三"},
-		//Data: map[string]string{
-		//	"张三":  "1",
-		//	"张三2": "nil",
-		//	"张三3": "sss",
-		//},
-		Data: "hello",
-		Stu: &Student1{
-			Name:    "张三",
-			Age:     100,
-			Address: []string{"张三", "张三", "张三", "张三", "张三"},
-			//Data: map[string]interface{}{
-			//	"张三":  1,
-			//	"张三2": nil,
-			//	"张三3": "sss",
-			//},
-		},
-	}
 }
