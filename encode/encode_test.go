@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	_ "github.com/alecthomas/go_serialization_benchmarks"
-	"github.com/ethereum/go-ethereum/rlp"
 	_ "github.com/ethereum/go-ethereum/rlp"
 	jsonitor "github.com/json-iterator/go"
 	"github.com/kelindar/binary"
@@ -51,17 +50,17 @@ func init() {
 //	fmt.Printf("%#v\n", val)
 //}
 
-func TestRlp(t *testing.T) {
-	s1 := GetStu()
-	var dt, err = rlp.EncodeToBytes(s1)
-	xerror.Panic(err)
-
-	fmt.Printf("%s\n", dt)
-
-	var val Student
-	xerror.Panic(rlp.DecodeBytes(dt, &val))
-	fmt.Printf("%#v\n", val)
-}
+//func TestRlp(t *testing.T) {
+//	s1 := GetStu()
+//	var dt, err = rlp.EncodeToBytes(s1)
+//	xerror.Panic(err)
+//
+//	fmt.Printf("%s\n", dt)
+//
+//	var val Student
+//	xerror.Panic(rlp.DecodeBytes(dt, &val))
+//	fmt.Printf("%#v\n", val)
+//}
 
 func TestMsgpack(t *testing.T) {
 	s1 := GetStu()
@@ -99,7 +98,7 @@ func TestMsgpack(t *testing.T) {
 //		_, _ = rlp.EncodeToBytes(s1)
 //	}
 //}
-
+//
 //func BenchmarkRlpDecode(b *testing.B) {
 //	s1 := GetStu()
 //	var dt, err = rlp.EncodeToBytes(s1)
