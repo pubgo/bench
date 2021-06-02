@@ -13,18 +13,15 @@ import (
 	_ "github.com/niubaoshu/gotiny"
 	"github.com/pubgo/xerror"
 	_ "github.com/smallnest/gosercomp/model"
+	_ "github.com/tendermint/go-amino"
 	_ "github.com/tinylib/msgp/msgp"
 	msgpack "github.com/vmihailenco/msgpack/v5"
 	"testing"
 )
 
-var std = jsonitor.Config{
-	//EscapeHTML:             true,
-	//UseNumber:              true,
-	//ValidateJsonRawMessage: true,
-}.Froze()
+var std = jsonitor.ConfigFastest
 
-//var cdc = amino.NewCodec()
+var cdc = amino.NewCodec()
 
 type d interface {
 }
@@ -32,9 +29,9 @@ type d interface {
 func init() {
 	std = jsonitor.ConfigCompatibleWithStandardLibrary
 	std = jsonitor.ConfigDefault
-	//cdc.RegisterInterface((*d)(nil), nil)
-	//cdc.RegisterConcrete(&Student{}, "main/Student", nil)
-	//cdc.RegisterConcrete(&Student1{}, "main/Student1", nil)
+	cdc.RegisterInterface((*d)(nil), nil)
+	cdc.RegisterConcrete(&Student{}, "main/Student", nil)
+	cdc.RegisterConcrete(&Student1{}, "main/Student1", nil)
 }
 
 //BenchmarkUnmarshalByColfer
@@ -75,24 +72,24 @@ func TestMsgpack(t *testing.T) {
 	fmt.Printf("%#v\n", val)
 }
 
-//func BenchmarkAminoEncode(b *testing.B) {
-//	s1 := GetStu()
-//	for i := 0; i < b.N; i++ {
-//		var _, _ = cdc.MarshalBinaryBare(s1)
-//	}
-//}
+func BenchmarkAminoEncode(b *testing.B) {
+	s1 := GetStu()
+	for i := 0; i < b.N; i++ {
+		var _, _ = cdc.MarshalBinaryBare(s1)
+	}
+}
 
-//func BenchmarkAminoDecode(b *testing.B) {
-//	s1 := GetStu()
-//	var dt, err = cdc.MarshalBinaryBare(s1)
-//	xerror.Panic(err)
-//
-//	b.ResetTimer()
-//	var val Student
-//	for i := 0; i < b.N; i++ {
-//		_ = cdc.UnmarshalBinaryBare(dt, &val)
-//	}
-//}
+func BenchmarkAminoDecode(b *testing.B) {
+	s1 := GetStu()
+	var dt, err = cdc.MarshalBinaryBare(s1)
+	xerror.Panic(err)
+
+	b.ResetTimer()
+	var val Student
+	for i := 0; i < b.N; i++ {
+		_ = cdc.UnmarshalBinaryBare(dt, &val)
+	}
+}
 
 //func BenchmarkRlpEncode(b *testing.B) {
 //	s1 := GetStu()
