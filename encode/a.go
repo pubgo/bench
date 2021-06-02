@@ -22,7 +22,7 @@ func GetStu() *Student {
 		//	"张三3": "sss",
 		//},
 		Data: "hello",
-		Stu: Student1{
+		Stu: &Student1{
 			Name:    "张三",
 			Age:     100,
 			Address: []string{"张三", "张三", "张三", "张三", "张三"},
@@ -49,7 +49,7 @@ type Student struct {
 	Data     string
 	Payload  []byte
 	Ssid     []uint32
-	Stu      Student1
+	Stu      *Student1
 }
 
 type Student1 struct {

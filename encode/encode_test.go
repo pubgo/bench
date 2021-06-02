@@ -8,8 +8,9 @@ import (
 	_ "github.com/alecthomas/go_serialization_benchmarks"
 	_ "github.com/ethereum/go-ethereum/rlp"
 	jsonitor "github.com/json-iterator/go"
-	"github.com/kelindar/binary"
 	_ "github.com/kelindar/binary"
+	"github.com/niubaoshu/gotiny"
+	_ "github.com/niubaoshu/gotiny"
 	"github.com/pubgo/xerror"
 	_ "github.com/smallnest/gosercomp/model"
 	msgpack "github.com/vmihailenco/msgpack/v5"
@@ -114,25 +115,44 @@ func TestMsgpack(t *testing.T) {
 //	//fmt.Printf("%#v\n", val)
 //}
 
-func BenchmarkBinaryEncode(b *testing.B) {
+//func BenchmarkBinaryEncode(b *testing.B) {
+//	s1 := GetStu()
+//	for i := 0; i < b.N; i++ {
+//		if _, err := binary.Marshal(s1); err != nil {
+//			panic(err)
+//		}
+//	}
+//}
+
+//func BenchmarkBinaryDecode(b *testing.B) {
+//	s1 := GetStu()
+//	var dt, err = binary.Marshal(s1)
+//	xerror.Panic(err)
+//
+//	b.ResetTimer()
+//	var val Student
+//
+//	for i := 0; i < b.N; i++ {
+//		_ = binary.Unmarshal(dt, &val)
+//	}
+//}
+
+func BenchmarkTinyEncode(b *testing.B) {
 	s1 := GetStu()
 	for i := 0; i < b.N; i++ {
-		if _, err := binary.Marshal(s1); err != nil {
-			panic(err)
-		}
+		_ = gotiny.Marshal(s1)
 	}
 }
 
-func BenchmarkBinaryDecode(b *testing.B) {
+func BenchmarkTinyDecode(b *testing.B) {
 	s1 := GetStu()
-	var dt, err = binary.Marshal(s1)
-	xerror.Panic(err)
+	var dt = gotiny.Marshal(s1)
 
 	b.ResetTimer()
 	var val Student
 
 	for i := 0; i < b.N; i++ {
-		_ = binary.Unmarshal(dt, &val)
+		_ = gotiny.Unmarshal(dt, &val)
 	}
 }
 
