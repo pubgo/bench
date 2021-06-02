@@ -12,6 +12,7 @@ require (
 	github.com/json-iterator/go v1.1.11
 	github.com/jtolds/gls v4.20.0+incompatible // indirect
 	github.com/kelindar/binary v1.0.9
+	github.com/mailru/easyjson v0.7.6
 	github.com/niubaoshu/gotiny v0.0.3
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pubgo/xerror v0.4.1

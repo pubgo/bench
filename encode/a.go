@@ -1,10 +1,12 @@
 package encode
 
+import "time"
+
 // rlp目的是可以将常用的数据结构,uint,string,[]byte,struct,slice,array,big.int等序列化以及反序列化
 
 func GetStu() *Student {
 	return &Student{
-		//BirthDay: time.Date(2013, 1, 2, 3, 4, 5, 6, time.UTC),
+		BirthDay: time.Date(2013, 1, 2, 3, 4, 5, 6, time.UTC),
 		Phone:    "5551234567",
 		Siblings: 2,
 		//Spouse:   false,
@@ -45,10 +47,10 @@ func GetStu() *Student {
 	}
 }
 
+//easyjson:json
 //go:generate msgp
-
 type Student struct {
-	//BirthDay time.Time
+	BirthDay time.Time
 	Phone    string
 	Siblings int
 	Spouse   bool

@@ -9,6 +9,10 @@ import (
 	_ "github.com/ethereum/go-ethereum/rlp"
 	jsonitor "github.com/json-iterator/go"
 	_ "github.com/kelindar/binary"
+	"github.com/mailru/easyjson"
+	_ "github.com/mailru/easyjson"
+	_ "github.com/mailru/easyjson/gen"
+	_ "github.com/mailru/easyjson/jwriter"
 	"github.com/niubaoshu/gotiny"
 	_ "github.com/niubaoshu/gotiny"
 	"github.com/pubgo/xerror"
@@ -21,7 +25,7 @@ import (
 
 var std = jsonitor.ConfigFastest
 
-var cdc = amino.NewCodec()
+//var cdc = amino.NewCodec()
 
 type d interface {
 }
@@ -29,9 +33,9 @@ type d interface {
 func init() {
 	std = jsonitor.ConfigCompatibleWithStandardLibrary
 	std = jsonitor.ConfigDefault
-	cdc.RegisterInterface((*d)(nil), nil)
-	cdc.RegisterConcrete(&Student{}, "main/Student", nil)
-	cdc.RegisterConcrete(&Student1{}, "main/Student1", nil)
+	//cdc.RegisterInterface((*d)(nil), nil)
+	//cdc.RegisterConcrete(&Student{}, "main/Student", nil)
+	//cdc.RegisterConcrete(&Student1{}, "main/Student1", nil)
 }
 
 //BenchmarkUnmarshalByColfer
@@ -72,22 +76,41 @@ func TestMsgpack(t *testing.T) {
 	fmt.Printf("%#v\n", val)
 }
 
-func BenchmarkAminoEncode(b *testing.B) {
+//func BenchmarkAminoEncode(b *testing.B) {
+//	s1 := GetStu()
+//	for i := 0; i < b.N; i++ {
+//		var _, _ = cdc.MarshalBinaryBare(s1)
+//	}
+//}
+
+//func BenchmarkAminoDecode(b *testing.B) {
+//	s1 := GetStu()
+//	var dt, err = cdc.MarshalBinaryBare(s1)
+//	xerror.Panic(err)
+//
+//	b.ResetTimer()
+//	var val Student
+//	for i := 0; i < b.N; i++ {
+//		_ = cdc.UnmarshalBinaryBare(dt, &val)
+//	}
+//}
+
+func BenchmarkJsonnnnnnEncode(b *testing.B) {
 	s1 := GetStu()
 	for i := 0; i < b.N; i++ {
-		var _, _ = cdc.MarshalBinaryBare(s1)
+		var _, _ = easyjson.Marshal(s1)
 	}
 }
 
-func BenchmarkAminoDecode(b *testing.B) {
+func BenchmarkJsonnnnnnDecode(b *testing.B) {
 	s1 := GetStu()
-	var dt, err = cdc.MarshalBinaryBare(s1)
+	var dt, err = easyjson.Marshal(s1)
 	xerror.Panic(err)
 
 	b.ResetTimer()
 	var val Student
 	for i := 0; i < b.N; i++ {
-		_ = cdc.UnmarshalBinaryBare(dt, &val)
+		_ = easyjson.Unmarshal(dt, &val)
 	}
 }
 
@@ -135,7 +158,7 @@ func BenchmarkAminoDecode(b *testing.B) {
 //	}
 //}
 
-func BenchmarkMsgMarshalMsgStudent(b *testing.B) {
+func BenchmarkMsggggggggggMarshalMsgStudent(b *testing.B) {
 	v := GetStu()
 	b.ReportAllocs()
 	b.ResetTimer()
@@ -144,11 +167,12 @@ func BenchmarkMsgMarshalMsgStudent(b *testing.B) {
 	}
 }
 
-func BenchmarkMsgUnmarshalStudent(b *testing.B) {
-	v := Student{}
+func BenchmarkMsgggggggggUnmarshalStudent(b *testing.B) {
+	v := GetStu()
 	bts, _ := v.MarshalMsg(nil)
 	b.ReportAllocs()
 	b.SetBytes(int64(len(bts)))
+	//fmt.Println(string(bts))
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		_, err := v.UnmarshalMsg(bts)

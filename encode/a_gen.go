@@ -84,6 +84,30 @@ func (z *Student) DecodeMsg(dc *msgp.Reader) (err error) {
 				}
 				z.Tags[za0001] = za0002
 			}
+		case "Payload":
+			z.Payload, err = dc.ReadBytes(z.Payload)
+			if err != nil {
+				err = msgp.WrapError(err, "Payload")
+				return
+			}
+		case "Stu":
+			if dc.IsNil() {
+				err = dc.ReadNil()
+				if err != nil {
+					err = msgp.WrapError(err, "Stu")
+					return
+				}
+				z.Stu = nil
+			} else {
+				if z.Stu == nil {
+					z.Stu = new(Student1)
+				}
+				err = z.Stu.DecodeMsg(dc)
+				if err != nil {
+					err = msgp.WrapError(err, "Stu")
+					return
+				}
+			}
 		case "Aliases":
 			var zb0003 uint32
 			zb0003, err = dc.ReadArrayHeader()
@@ -140,12 +164,6 @@ func (z *Student) DecodeMsg(dc *msgp.Reader) (err error) {
 				err = msgp.WrapError(err, "Data")
 				return
 			}
-		case "Payload":
-			z.Payload, err = dc.ReadBytes(z.Payload)
-			if err != nil {
-				err = msgp.WrapError(err, "Payload")
-				return
-			}
 		case "Ssid":
 			var zb0005 uint32
 			zb0005, err = dc.ReadArrayHeader()
@@ -162,24 +180,6 @@ func (z *Student) DecodeMsg(dc *msgp.Reader) (err error) {
 				z.Ssid[za0005], err = dc.ReadUint32()
 				if err != nil {
 					err = msgp.WrapError(err, "Ssid", za0005)
-					return
-				}
-			}
-		case "Stu":
-			if dc.IsNil() {
-				err = dc.ReadNil()
-				if err != nil {
-					err = msgp.WrapError(err, "Stu")
-					return
-				}
-				z.Stu = nil
-			} else {
-				if z.Stu == nil {
-					z.Stu = new(Student1)
-				}
-				err = z.Stu.DecodeMsg(dc)
-				if err != nil {
-					err = msgp.WrapError(err, "Stu")
 					return
 				}
 			}
@@ -269,6 +269,33 @@ func (z *Student) EncodeMsg(en *msgp.Writer) (err error) {
 			return
 		}
 	}
+	// write "Payload"
+	err = en.Append(0xa7, 0x50, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64)
+	if err != nil {
+		return
+	}
+	err = en.WriteBytes(z.Payload)
+	if err != nil {
+		err = msgp.WrapError(err, "Payload")
+		return
+	}
+	// write "Stu"
+	err = en.Append(0xa3, 0x53, 0x74, 0x75)
+	if err != nil {
+		return
+	}
+	if z.Stu == nil {
+		err = en.WriteNil()
+		if err != nil {
+			return
+		}
+	} else {
+		err = z.Stu.EncodeMsg(en)
+		if err != nil {
+			err = msgp.WrapError(err, "Stu")
+			return
+		}
+	}
 	// write "Aliases"
 	err = en.Append(0xa7, 0x41, 0x6c, 0x69, 0x61, 0x73, 0x65, 0x73)
 	if err != nil {
@@ -333,16 +360,6 @@ func (z *Student) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Data")
 		return
 	}
-	// write "Payload"
-	err = en.Append(0xa7, 0x50, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64)
-	if err != nil {
-		return
-	}
-	err = en.WriteBytes(z.Payload)
-	if err != nil {
-		err = msgp.WrapError(err, "Payload")
-		return
-	}
 	// write "Ssid"
 	err = en.Append(0xa4, 0x53, 0x73, 0x69, 0x64)
 	if err != nil {
@@ -357,23 +374,6 @@ func (z *Student) EncodeMsg(en *msgp.Writer) (err error) {
 		err = en.WriteUint32(z.Ssid[za0005])
 		if err != nil {
 			err = msgp.WrapError(err, "Ssid", za0005)
-			return
-		}
-	}
-	// write "Stu"
-	err = en.Append(0xa3, 0x53, 0x74, 0x75)
-	if err != nil {
-		return
-	}
-	if z.Stu == nil {
-		err = en.WriteNil()
-		if err != nil {
-			return
-		}
-	} else {
-		err = z.Stu.EncodeMsg(en)
-		if err != nil {
-			err = msgp.WrapError(err, "Stu")
 			return
 		}
 	}
@@ -406,6 +406,20 @@ func (z *Student) MarshalMsg(b []byte) (o []byte, err error) {
 		o = msgp.AppendString(o, za0001)
 		o = msgp.AppendString(o, za0002)
 	}
+	// string "Payload"
+	o = append(o, 0xa7, 0x50, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64)
+	o = msgp.AppendBytes(o, z.Payload)
+	// string "Stu"
+	o = append(o, 0xa3, 0x53, 0x74, 0x75)
+	if z.Stu == nil {
+		o = msgp.AppendNil(o)
+	} else {
+		o, err = z.Stu.MarshalMsg(o)
+		if err != nil {
+			err = msgp.WrapError(err, "Stu")
+			return
+		}
+	}
 	// string "Aliases"
 	o = append(o, 0xa7, 0x41, 0x6c, 0x69, 0x61, 0x73, 0x65, 0x73)
 	o = msgp.AppendArrayHeader(o, uint32(len(z.Aliases)))
@@ -427,25 +441,11 @@ func (z *Student) MarshalMsg(b []byte) (o []byte, err error) {
 	// string "Data"
 	o = append(o, 0xa4, 0x44, 0x61, 0x74, 0x61)
 	o = msgp.AppendString(o, z.Data)
-	// string "Payload"
-	o = append(o, 0xa7, 0x50, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64)
-	o = msgp.AppendBytes(o, z.Payload)
 	// string "Ssid"
 	o = append(o, 0xa4, 0x53, 0x73, 0x69, 0x64)
 	o = msgp.AppendArrayHeader(o, uint32(len(z.Ssid)))
 	for za0005 := range z.Ssid {
 		o = msgp.AppendUint32(o, z.Ssid[za0005])
-	}
-	// string "Stu"
-	o = append(o, 0xa3, 0x53, 0x74, 0x75)
-	if z.Stu == nil {
-		o = msgp.AppendNil(o)
-	} else {
-		o, err = z.Stu.MarshalMsg(o)
-		if err != nil {
-			err = msgp.WrapError(err, "Stu")
-			return
-		}
 	}
 	return
 }
@@ -528,6 +528,29 @@ func (z *Student) UnmarshalMsg(bts []byte) (o []byte, err error) {
 				}
 				z.Tags[za0001] = za0002
 			}
+		case "Payload":
+			z.Payload, bts, err = msgp.ReadBytesBytes(bts, z.Payload)
+			if err != nil {
+				err = msgp.WrapError(err, "Payload")
+				return
+			}
+		case "Stu":
+			if msgp.IsNil(bts) {
+				bts, err = msgp.ReadNilBytes(bts)
+				if err != nil {
+					return
+				}
+				z.Stu = nil
+			} else {
+				if z.Stu == nil {
+					z.Stu = new(Student1)
+				}
+				bts, err = z.Stu.UnmarshalMsg(bts)
+				if err != nil {
+					err = msgp.WrapError(err, "Stu")
+					return
+				}
+			}
 		case "Aliases":
 			var zb0003 uint32
 			zb0003, bts, err = msgp.ReadArrayHeaderBytes(bts)
@@ -584,12 +607,6 @@ func (z *Student) UnmarshalMsg(bts []byte) (o []byte, err error) {
 				err = msgp.WrapError(err, "Data")
 				return
 			}
-		case "Payload":
-			z.Payload, bts, err = msgp.ReadBytesBytes(bts, z.Payload)
-			if err != nil {
-				err = msgp.WrapError(err, "Payload")
-				return
-			}
 		case "Ssid":
 			var zb0005 uint32
 			zb0005, bts, err = msgp.ReadArrayHeaderBytes(bts)
@@ -606,23 +623,6 @@ func (z *Student) UnmarshalMsg(bts []byte) (o []byte, err error) {
 				z.Ssid[za0005], bts, err = msgp.ReadUint32Bytes(bts)
 				if err != nil {
 					err = msgp.WrapError(err, "Ssid", za0005)
-					return
-				}
-			}
-		case "Stu":
-			if msgp.IsNil(bts) {
-				bts, err = msgp.ReadNilBytes(bts)
-				if err != nil {
-					return
-				}
-				z.Stu = nil
-			} else {
-				if z.Stu == nil {
-					z.Stu = new(Student1)
-				}
-				bts, err = z.Stu.UnmarshalMsg(bts)
-				if err != nil {
-					err = msgp.WrapError(err, "Stu")
 					return
 				}
 			}
@@ -647,6 +647,12 @@ func (z *Student) Msgsize() (s int) {
 			s += msgp.StringPrefixSize + len(za0001) + msgp.StringPrefixSize + len(za0002)
 		}
 	}
+	s += 8 + msgp.BytesPrefixSize + len(z.Payload) + 4
+	if z.Stu == nil {
+		s += msgp.NilSize
+	} else {
+		s += z.Stu.Msgsize()
+	}
 	s += 8 + msgp.ArrayHeaderSize
 	for za0003 := range z.Aliases {
 		s += msgp.StringPrefixSize + len(z.Aliases[za0003])
@@ -655,12 +661,7 @@ func (z *Student) Msgsize() (s int) {
 	for za0004 := range z.Address {
 		s += msgp.StringPrefixSize + len(z.Address[za0004])
 	}
-	s += 5 + msgp.StringPrefixSize + len(z.Data) + 8 + msgp.BytesPrefixSize + len(z.Payload) + 5 + msgp.ArrayHeaderSize + (len(z.Ssid) * (msgp.Uint32Size)) + 4
-	if z.Stu == nil {
-		s += msgp.NilSize
-	} else {
-		s += z.Stu.Msgsize()
-	}
+	s += 5 + msgp.StringPrefixSize + len(z.Data) + 5 + msgp.ArrayHeaderSize + (len(z.Ssid) * (msgp.Uint32Size))
 	return
 }
 
