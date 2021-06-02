@@ -35,6 +35,8 @@ func GetStu() *Student {
 	}
 }
 
+//go:generate msgp
+
 type Student struct {
 	BirthDay time.Time
 	Phone    string

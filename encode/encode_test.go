@@ -13,6 +13,7 @@ import (
 	_ "github.com/niubaoshu/gotiny"
 	"github.com/pubgo/xerror"
 	_ "github.com/smallnest/gosercomp/model"
+	_ "github.com/tinylib/msgp/msgp"
 	msgpack "github.com/vmihailenco/msgpack/v5"
 	"testing"
 )
@@ -136,6 +137,29 @@ func TestMsgpack(t *testing.T) {
 //		_ = binary.Unmarshal(dt, &val)
 //	}
 //}
+
+func BenchmarkMsgMarshalMsgStudent(b *testing.B) {
+	v := GetStu()
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		v.MarshalMsg(nil)
+	}
+}
+
+func BenchmarkMsgUnmarshalStudent(b *testing.B) {
+	v := Student{}
+	bts, _ := v.MarshalMsg(nil)
+	b.ReportAllocs()
+	b.SetBytes(int64(len(bts)))
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, err := v.UnmarshalMsg(bts)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
 
 func BenchmarkTinyEncode(b *testing.B) {
 	s1 := GetStu()
