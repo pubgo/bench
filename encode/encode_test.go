@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	_ "github.com/alecthomas/go_serialization_benchmarks"
+	"github.com/bytedance/sonic"
+	_ "github.com/bytedance/sonic"
 	_ "github.com/ethereum/go-ethereum/rlp"
 	jsonitor "github.com/json-iterator/go"
 	_ "github.com/kelindar/binary"
@@ -105,6 +107,26 @@ func BenchmarkJsonnnnnnEncode(b *testing.B) {
 func BenchmarkJsonnnnnnDecode(b *testing.B) {
 	s1 := GetStu()
 	var dt, err = easyjson.Marshal(s1)
+	xerror.Panic(err)
+
+	b.ResetTimer()
+	var val Student
+	for i := 0; i < b.N; i++ {
+		_ = easyjson.Unmarshal(dt, &val)
+	}
+}
+
+
+func BenchmarkSanicEncode(b *testing.B) {
+	s1 := GetStu()
+	for i := 0; i < b.N; i++ {
+		var _, _ = sonic.Marshal(s1)
+	}
+}
+
+func BenchmarkSanicDecode(b *testing.B) {
+	s1 := GetStu()
+	var dt, err = sonic.Marshal(s1)
 	xerror.Panic(err)
 
 	b.ResetTimer()

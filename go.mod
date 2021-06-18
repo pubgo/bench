@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/alecthomas/go_serialization_benchmarks v0.0.0-20210425181318-cc8354ec00b8
+	github.com/bytedance/sonic v0.0.0-20210616150521-b2fbad7b4c8e
 	github.com/dghubble/trie v0.0.0-20210506170352-7bfa5d9a3938
 	github.com/ethereum/go-ethereum v1.9.3
 	github.com/glycerine/goconvey v0.0.0-20190410193231-58a59202ab31 // indirect
@@ -17,7 +18,6 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pubgo/xerror v0.4.1
 	github.com/smallnest/gosercomp v0.0.0-20210420121053-c12d01245b1d
-	github.com/stretchr/testify v1.7.0 // indirect
 	github.com/tendermint/go-amino v0.16.0
 	github.com/tinylib/msgp v1.1.5
 	github.com/valyala/fastrand v1.0.0
